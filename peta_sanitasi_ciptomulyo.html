@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Peta Kondisi Sanitasi - Kelurahan Ciptomulyo</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f5f5f0;
+    color: #222;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #444;
+    flex-wrap: wrap;
+  }
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  #map {
+    height: 500px;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  .note {
+    font-size: 12px;
+    color: #888;
+    margin-top: 10px;
+  }
+  .popup-content {
+    font-size: 13px;
+    min-width: 180px;
+  }
+  .popup-content strong {
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Peta Kondisi Sanitasi per RT</h1>
+  <p class="subtitle">Kelurahan Ciptomulyo, Kecamatan Sukun, Kota Malang</p>
+
+  <div class="legend">
+    <span><span class="dot" style="background:#2e9e6f;"></span>Baik</span>
+    <span><span class="dot" style="background:#e6a11f;"></span>Sedang</span>
+    <span><span class="dot" style="background:#d64545;"></span>Buruk</span>
+  </div>
+
+  <div id="map"></div>
+
+  <p class="note">
+    Catatan: data pada peta ini adalah DATA CONTOH (dummy) untuk keperluan demo.
+    Ganti isi variabel <code>rtData</code> di bagian script dengan data sebenarnya
+    sebelum digunakan untuk laporan/publikasi resmi.
+  </p>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // ======================================================
+  // DATA RT - GANTI DENGAN DATA ASLI DARI PRODESKEL/EXCEL
+  // ======================================================
+  // Field yang bisa disesuaikan:
+  //   rt      : nama/nomor RT
+  //   lat,lng : koordinat titik (hasil geocoding alamat/patokan)
+  //   status  : "Baik" | "Sedang" | "Buruk"  -> menentukan warna marker
+  //   jamban  : persentase/keterangan akses jamban sehat
+  //   air     : sumber air bersih & kualitasnya
+  //   ipal    : kondisi IPAL / septic tank
+  const rtData = [
+    {
+      rt: "RT 01",
+      lat: -7.9945,
+      lng: 112.6135,
+      status: "Baik",
+      jamban: "98%",
+      air: "PDAM, kualitas baik",
+      ipal: "Ada, sistem komunal"
+    },
+    {
+      rt: "RT 02",
+      lat: -7.9958,
+      lng: 112.6148,
+      status: "Sedang",
+      jamban: "82%",
+      air: "Sumur + PDAM",
+      ipal: "Sebagian rumah, sistem individu"
+    },
+    {
+      rt: "RT 03",
+      lat: -7.9932,
+      lng: 112.6155,
+      status: "Buruk",
+      jamban: "60%",
+      air: "Sumur, kualitas rendah",
+      ipal: "Belum ada"
+    },
+    {
+      rt: "RT 04",
+      lat: -7.9967,
+      lng: 112.6122,
+      status: "Sedang",
+      jamban: "85%",
+      air: "PDAM",
+      ipal: "Sebagian rumah"
+    },
+    {
+      rt: "RT 05",
+      lat: -7.9920,
+      lng: 112.6168,
+      status: "Baik",
+      jamban: "95%",
+      air: "PDAM, kualitas baik",
+      ipal: "Ada, sistem individu"
+    }
+  ];
+
+  // Warna marker berdasarkan status
+  const colorMap = {
+    "Baik": "#2e9e6f",
+    "Sedang": "#e6a11f",
+    "Buruk": "#d64545"
+  };
+
+  // Titik tengah peta (rata-rata koordinat data)
+  const centerLat = rtData.reduce((s, d) => s + d.lat, 0) / rtData.length;
+  const centerLng = rtData.reduce((s, d) => s + d.lng, 0) / rtData.length;
+
+  const map = L.map('map').setView([centerLat, centerLng], 15);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }).addTo(map);
+
+  rtData.forEach(function (d) {
+    const marker = L.circleMarker([d.lat, d.lng], {
+      radius: 10,
+      fillColor: colorMap[d.status] || "#888",
+      color: "#fff",
+      weight: 2,
+      fillOpacity: 0.9
+    }).addTo(map);
+
+    const popupHtml =
+      '<div class="popup-content">' +
+      '<strong>' + d.rt + '</strong><br/>' +
+      '<span style="color:' + (colorMap[d.status] || "#888") + '; font-weight:bold;">' +
+      'Kondisi: ' + d.status + '</span><br/>' +
+      'Akses jamban sehat: ' + d.jamban + '<br/>' +
+      'Sumber air bersih: ' + d.air + '<br/>' +
+      'IPAL / septic tank: ' + d.ipal +
+      '</div>';
+
+    marker.bindPopup(popupHtml);
+  });
+</script>
+</body>
+</html>
