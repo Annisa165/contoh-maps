@@ -91,10 +91,10 @@
   <div id="map"></div>
 
   <p class="note">
-    Catatan: data pada peta ini adalah DATA CONTOH (dummy) untuk keperluan demo. Garis batas
-    wilayah adalah ESTIMASI VISUAL dari screenshot Google Maps (bukan hasil ekstraksi
-    geospasial presisi) — verifikasi dengan Overpass Turbo atau shapefile resmi kelurahan
-    sebelum dipakai untuk laporan/publikasi resmi. Basemap: citra satelit Esri.
+    Catatan: <strong>batas wilayah</strong> pada peta ini menggunakan data koordinat resmi.
+    <strong>Data titik RT dan kondisi sanitasi</strong> masih DATA CONTOH (dummy) — ganti isi
+    variabel <code>rtData</code> di bagian script dengan data sebenarnya sebelum digunakan
+    untuk laporan/publikasi resmi. Basemap: citra satelit Esri.
   </p>
 </div>
 
@@ -110,30 +110,46 @@
   //   jamban  : persentase/keterangan akses jamban sehat
   //   air     : sumber air bersih & kualitasnya
   //   ipal    : kondisi IPAL / septic tank
-  // Batas wilayah - ESTIMASI VISUAL diperhalus dari screenshot Google Maps (zoom lebih dekat).
-  // Referensi jalan: Jl. Kalimantan/Tanimbar (utara), Jl. Kolonel Sugiono (sisi timur,
-  // relatif lurus), Jl. Niaga/Kali Kutuk (tonjolan barat), Gg. Dahlia/Gg. 2 (selatan).
-  // GANTI dengan GeoJSON resmi (Overpass Turbo / shapefile kelurahan) untuk akurasi penuh.
+  // Batas wilayah Kelurahan Ciptomulyo - data koordinat presisi
   const boundaryCoords = [
-    [-7.9895, 112.6295],  // titik utara (dekat Jl. Kalimantan/Tanimbar)
-    [-7.9915, 112.6345],  // bahu timur atas (dekat Malang Kotalama)
-    [-7.9955, 112.6350],  // sisi timur (mengikuti Jl. Kol. Sugiono)
-    [-7.9995, 112.6348],  // sisi timur tengah (dekat Gg. 7)
-    [-8.0025, 112.6338],  // sisi timur bawah (dekat Gg. 3b)
-    [-8.0055, 112.6320],  // tikungan tenggara
-    [-8.0075, 112.6295],  // titik selatan (dekat Gg. 2)
-    [-8.0055, 112.6270],  // sisi barat bawah (dekat Gg. Dahlia)
-    [-8.0005, 112.6255],  // dekat SMK Negeri 1 Kota Malang
-    [-7.9955, 112.6240],  // tonjolan barat (dekat Jl. Niaga/Kali Kutuk)
-    [-7.9915, 112.6255],  // sisi barat atas (dekat Jl. Susanto)
-    [-7.9895, 112.6295]   // tutup polygon
+    [-7.991129, 112.628608],
+    [-7.991981, 112.630788],
+    [-7.992553, 112.630831],
+    [-7.992956, 112.631152],
+    [-7.993571, 112.633228],
+    [-8.006292, 112.629669],
+    [-8.006356, 112.629506],
+    [-8.006229, 112.628856],
+    [-8.006241, 112.628217],
+    [-8.006287, 112.627741],
+    [-8.006781, 112.627114],
+    [-8.007183, 112.626696],
+    [-8.007195, 112.626476],
+    [-8.007540, 112.626406],
+    [-8.007482, 112.626151],
+    [-8.007114, 112.626302],
+    [-8.006815, 112.625954],
+    [-8.005218, 112.626046],
+    [-8.004585, 112.626534],
+    [-8.003127, 112.627166],
+    [-8.002072, 112.627205],
+    [-7.999700, 112.626228],
+    [-7.998115, 112.625359],
+    [-7.997831, 112.625470],
+    [-7.996326, 112.625651],
+    [-7.996553, 112.626290],
+    [-7.996062, 112.626547],
+    [-7.995957131769342, 112.62645130937115],
+    [-7.993903, 112.627371],
+    [-7.992144, 112.628182],
+    [-7.991155, 112.628617]
   ];
 
   const rtData = [
     {
       rt: "RT 01",
-      lat: -7.9975,
-      lng: 112.6285,
+      lat: -7.9955,
+      lng: 112.6270,
       status: "Baik",
       jamban: "98%",
       air: "PDAM, kualitas baik",
@@ -141,8 +157,8 @@
     },
     {
       rt: "RT 02",
-      lat: -7.9988,
-      lng: 112.6298,
+      lat: -7.9985,
+      lng: 112.6285,
       status: "Sedang",
       jamban: "82%",
       air: "Sumur + PDAM",
@@ -150,8 +166,8 @@
     },
     {
       rt: "RT 03",
-      lat: -7.9962,
-      lng: 112.6305,
+      lat: -8.0020,
+      lng: 112.6275,
       status: "Buruk",
       jamban: "60%",
       air: "Sumur, kualitas rendah",
@@ -159,8 +175,8 @@
     },
     {
       rt: "RT 04",
-      lat: -7.9997,
-      lng: 112.6272,
+      lat: -8.0050,
+      lng: 112.6285,
       status: "Sedang",
       jamban: "85%",
       air: "PDAM",
@@ -168,8 +184,8 @@
     },
     {
       rt: "RT 05",
-      lat: -7.9950,
-      lng: 112.6318,
+      lat: -7.9930,
+      lng: 112.6300,
       status: "Baik",
       jamban: "95%",
       air: "PDAM, kualitas baik",
@@ -177,8 +193,8 @@
     }
   ];
 
-  // Titik tengah Kelurahan Ciptomulyo (koordinat terverifikasi)
-  const kelurahanCenter = { lat: -7.997822, lng: 112.630235 };
+  // Titik tengah Kelurahan Ciptomulyo (centroid dari batas wilayah resmi)
+  const kelurahanCenter = { lat: -8.000531, lng: 112.627639 };
 
   // Warna marker berdasarkan status
   const colorMap = {
@@ -210,8 +226,7 @@
   });
   boundaryLayer.bindPopup(
     '<strong>Kelurahan Ciptomulyo</strong><br/>' +
-    'Kec. Sukun, Kota Malang<br/>' +
-    '<span style="color:#999; font-size:11px;">(estimasi visual dari Google Maps, bukan data survey resmi)</span>'
+    'Kec. Sukun, Kota Malang'
   );
 
   // Marker penanda titik tengah kelurahan - ikon belah ketupat, beda dari marker RT
