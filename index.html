@@ -110,20 +110,23 @@
   //   jamban  : persentase/keterangan akses jamban sehat
   //   air     : sumber air bersih & kualitasnya
   //   ipal    : kondisi IPAL / septic tank
-  // Batas wilayah - ESTIMASI VISUAL dari screenshot Google Maps, BUKAN data presisi.
-  // Mengikuti bentuk memanjang: meruncing di utara & selatan, sisi timur mengikuti
-  // Jl. Kolonel Sugiono, sisi barat menonjol di sekitar Jl. Niaga/Gg. 10.
+  // Batas wilayah - ESTIMASI VISUAL diperhalus dari screenshot Google Maps (zoom lebih dekat).
+  // Referensi jalan: Jl. Kalimantan/Tanimbar (utara), Jl. Kolonel Sugiono (sisi timur,
+  // relatif lurus), Jl. Niaga/Kali Kutuk (tonjolan barat), Gg. Dahlia/Gg. 2 (selatan).
   // GANTI dengan GeoJSON resmi (Overpass Turbo / shapefile kelurahan) untuk akurasi penuh.
   const boundaryCoords = [
-    [-7.98982, 112.62974],  // ujung utara (dekat Jl. Susanto)
-    [-7.99182, 112.63424],  // sisi timur atas
-    [-7.99782, 112.63454],  // sisi timur tengah (mengikuti Jl. Kol. Sugiono)
-    [-8.00382, 112.63404],  // sisi timur bawah
-    [-8.00702, 112.63124],  // ujung selatan (dekat Gg. 2)
-    [-8.00282, 112.62674],  // sisi barat bawah
-    [-7.99732, 112.62624],  // tonjolan barat (dekat Jl. Niaga/Gg. 10)
-    [-7.99282, 112.62774],  // sisi barat atas
-    [-7.98982, 112.62974]   // tutup polygon
+    [-7.9895, 112.6295],  // titik utara (dekat Jl. Kalimantan/Tanimbar)
+    [-7.9915, 112.6345],  // bahu timur atas (dekat Malang Kotalama)
+    [-7.9955, 112.6350],  // sisi timur (mengikuti Jl. Kol. Sugiono)
+    [-7.9995, 112.6348],  // sisi timur tengah (dekat Gg. 7)
+    [-8.0025, 112.6338],  // sisi timur bawah (dekat Gg. 3b)
+    [-8.0055, 112.6320],  // tikungan tenggara
+    [-8.0075, 112.6295],  // titik selatan (dekat Gg. 2)
+    [-8.0055, 112.6270],  // sisi barat bawah (dekat Gg. Dahlia)
+    [-8.0005, 112.6255],  // dekat SMK Negeri 1 Kota Malang
+    [-7.9955, 112.6240],  // tonjolan barat (dekat Jl. Niaga/Kali Kutuk)
+    [-7.9915, 112.6255],  // sisi barat atas (dekat Jl. Susanto)
+    [-7.9895, 112.6295]   // tutup polygon
   ];
 
   const rtData = [
