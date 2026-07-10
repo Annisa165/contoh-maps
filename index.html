@@ -64,6 +64,15 @@
   .popup-content strong {
     font-size: 14px;
   }
+  .kel-label {
+    background: rgba(255,255,255,0.85);
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    font-weight: 600;
+    color: #7C3AED;
+    font-size: 12px;
+    padding: 2px 6px;
+  }
 </style>
 </head>
 <body>
@@ -75,14 +84,17 @@
     <span><span class="dot" style="background:#2e9e6f;"></span>Baik</span>
     <span><span class="dot" style="background:#e6a11f;"></span>Sedang</span>
     <span><span class="dot" style="background:#d64545;"></span>Buruk</span>
+    <span><span style="display:inline-block;width:10px;height:10px;background:#3B82F6;transform:rotate(45deg);"></span>Titik tengah kelurahan</span>
+    <span><span style="display:inline-block;width:16px;height:10px;background:#7C3AED;opacity:0.35;border:1px solid #7C3AED;"></span>Area Kelurahan Ciptomulyo</span>
   </div>
 
   <div id="map"></div>
 
   <p class="note">
-    Catatan: data pada peta ini adalah DATA CONTOH (dummy) untuk keperluan demo.
-    Ganti isi variabel <code>rtData</code> di bagian script dengan data sebenarnya
-    sebelum digunakan untuk laporan/publikasi resmi. Basemap: citra satelit Esri.
+    Catatan: data pada peta ini adalah DATA CONTOH (dummy) untuk keperluan demo. Garis batas
+    wilayah adalah ESTIMASI VISUAL dari screenshot Google Maps (bukan hasil ekstraksi
+    geospasial presisi) — verifikasi dengan Overpass Turbo atau shapefile resmi kelurahan
+    sebelum dipakai untuk laporan/publikasi resmi. Basemap: citra satelit Esri.
   </p>
 </div>
 
@@ -98,6 +110,22 @@
   //   jamban  : persentase/keterangan akses jamban sehat
   //   air     : sumber air bersih & kualitasnya
   //   ipal    : kondisi IPAL / septic tank
+  // Batas wilayah - ESTIMASI VISUAL dari screenshot Google Maps, BUKAN data presisi.
+  // Mengikuti bentuk memanjang: meruncing di utara & selatan, sisi timur mengikuti
+  // Jl. Kolonel Sugiono, sisi barat menonjol di sekitar Jl. Niaga/Gg. 10.
+  // GANTI dengan GeoJSON resmi (Overpass Turbo / shapefile kelurahan) untuk akurasi penuh.
+  const boundaryCoords = [
+    [-7.98982, 112.62974],  // ujung utara (dekat Jl. Susanto)
+    [-7.99182, 112.63424],  // sisi timur atas
+    [-7.99782, 112.63454],  // sisi timur tengah (mengikuti Jl. Kol. Sugiono)
+    [-8.00382, 112.63404],  // sisi timur bawah
+    [-8.00702, 112.63124],  // ujung selatan (dekat Gg. 2)
+    [-8.00282, 112.62674],  // sisi barat bawah
+    [-7.99732, 112.62624],  // tonjolan barat (dekat Jl. Niaga/Gg. 10)
+    [-7.99282, 112.62774],  // sisi barat atas
+    [-7.98982, 112.62974]   // tutup polygon
+  ];
+
   const rtData = [
     {
       rt: "RT 01",
@@ -146,8 +174,8 @@
     }
   ];
 
-  // Titik tengah resmi Kelurahan Ciptomulyo (dari Google Maps)
-  const kelurahanCenter = { lat: -7.99833, lng: 112.62972 };
+  // Titik tengah Kelurahan Ciptomulyo (koordinat terverifikasi)
+  const kelurahanCenter = { lat: -7.997822, lng: 112.630235 };
 
   // Warna marker berdasarkan status
   const colorMap = {
@@ -164,14 +192,33 @@
     maxZoom: 19
   }).addTo(map);
 
-  // Marker penanda titik tengah kelurahan
+  // Gambar dan warnai area Kelurahan Ciptomulyo (perkiraan/dummy)
+  const boundaryLayer = L.polygon(boundaryCoords, {
+    color: '#7C3AED',
+    weight: 3,
+    fillColor: '#7C3AED',
+    fillOpacity: 0.28
+  }).addTo(map);
+
+  boundaryLayer.bindTooltip('Kelurahan Ciptomulyo', {
+    permanent: true,
+    direction: 'center',
+    className: 'kel-label'
+  });
+  boundaryLayer.bindPopup(
+    '<strong>Kelurahan Ciptomulyo</strong><br/>' +
+    'Kec. Sukun, Kota Malang<br/>' +
+    '<span style="color:#999; font-size:11px;">(estimasi visual dari Google Maps, bukan data survey resmi)</span>'
+  );
+
+  // Marker penanda titik tengah kelurahan - ikon belah ketupat, beda dari marker RT
   L.marker([kelurahanCenter.lat, kelurahanCenter.lng], {
     icon: L.divIcon({
-      html: '<div style="background:#3B82F6; width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 0 4px rgba(0,0,0,0.5);"></div>',
+      html: '<div style="width:16px; height:16px; background:#3B82F6; border:2px solid white; transform:rotate(45deg); box-shadow:0 0 4px rgba(0,0,0,0.6);"></div>',
       className: '',
-      iconSize: [14, 14]
+      iconSize: [16, 16]
     })
-  }).addTo(map).bindPopup('Titik tengah Kelurahan Ciptomulyo');
+  }).addTo(map).bindPopup('<strong>Titik tengah Kelurahan Ciptomulyo</strong>');
 
   rtData.forEach(function (d) {
     const marker = L.circleMarker([d.lat, d.lng], {
