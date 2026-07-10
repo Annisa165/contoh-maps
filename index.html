@@ -82,7 +82,7 @@
   <p class="note">
     Catatan: data pada peta ini adalah DATA CONTOH (dummy) untuk keperluan demo.
     Ganti isi variabel <code>rtData</code> di bagian script dengan data sebenarnya
-    sebelum digunakan untuk laporan/publikasi resmi.
+    sebelum digunakan untuk laporan/publikasi resmi. Basemap: citra satelit Esri.
   </p>
 </div>
 
@@ -101,8 +101,8 @@
   const rtData = [
     {
       rt: "RT 01",
-      lat: -7.9945,
-      lng: 112.6135,
+      lat: -7.9975,
+      lng: 112.6285,
       status: "Baik",
       jamban: "98%",
       air: "PDAM, kualitas baik",
@@ -110,8 +110,8 @@
     },
     {
       rt: "RT 02",
-      lat: -7.9958,
-      lng: 112.6148,
+      lat: -7.9988,
+      lng: 112.6298,
       status: "Sedang",
       jamban: "82%",
       air: "Sumur + PDAM",
@@ -119,8 +119,8 @@
     },
     {
       rt: "RT 03",
-      lat: -7.9932,
-      lng: 112.6155,
+      lat: -7.9962,
+      lng: 112.6305,
       status: "Buruk",
       jamban: "60%",
       air: "Sumur, kualitas rendah",
@@ -128,8 +128,8 @@
     },
     {
       rt: "RT 04",
-      lat: -7.9967,
-      lng: 112.6122,
+      lat: -7.9997,
+      lng: 112.6272,
       status: "Sedang",
       jamban: "85%",
       air: "PDAM",
@@ -137,14 +137,17 @@
     },
     {
       rt: "RT 05",
-      lat: -7.9920,
-      lng: 112.6168,
+      lat: -7.9950,
+      lng: 112.6318,
       status: "Baik",
       jamban: "95%",
       air: "PDAM, kualitas baik",
       ipal: "Ada, sistem individu"
     }
   ];
+
+  // Titik tengah resmi Kelurahan Ciptomulyo (dari Google Maps)
+  const kelurahanCenter = { lat: -7.99833, lng: 112.62972 };
 
   // Warna marker berdasarkan status
   const colorMap = {
@@ -153,16 +156,22 @@
     "Buruk": "#d64545"
   };
 
-  // Titik tengah peta (rata-rata koordinat data)
-  const centerLat = rtData.reduce((s, d) => s + d.lat, 0) / rtData.length;
-  const centerLng = rtData.reduce((s, d) => s + d.lng, 0) / rtData.length;
+  const map = L.map('map').setView([kelurahanCenter.lat, kelurahanCenter.lng], 15);
 
-  const map = L.map('map').setView([centerLat, centerLng], 15);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  // Basemap citra satelit (Esri World Imagery) - gratis, tanpa API key
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics',
     maxZoom: 19
   }).addTo(map);
+
+  // Marker penanda titik tengah kelurahan
+  L.marker([kelurahanCenter.lat, kelurahanCenter.lng], {
+    icon: L.divIcon({
+      html: '<div style="background:#3B82F6; width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 0 4px rgba(0,0,0,0.5);"></div>',
+      className: '',
+      iconSize: [14, 14]
+    })
+  }).addTo(map).bindPopup('Titik tengah Kelurahan Ciptomulyo');
 
   rtData.forEach(function (d) {
     const marker = L.circleMarker([d.lat, d.lng], {
